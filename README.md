@@ -12,7 +12,7 @@ A business intelligence platform that helps companies identify pain points, disc
 ## Features
 
 - Business pain point analysis
-- Nearby service provider discovery
+- Helpful service provider discovery
 - AI-generated actionable business advice
 - Automated email template generation for outreach
 - Real-time business insights powered by Claude AI
@@ -164,7 +164,7 @@ npm run preview
 1. **User Input**: Users enter their business name, address, industry, and pain points through the web interface
 2. **AI Analysis**: The frontend sends data to the Supabase Edge Function
 3. **Claude Processing**: The Edge Function uses Anthropic's Claude AI to:
-   - Find nearby service providers
+   - Find helpful service providers
    - Generate actionable business advice
    - Create personalized email templates
 4. **Results Display**: The frontend displays the AI-generated insights in a clean, organized interface

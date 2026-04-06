@@ -101,7 +101,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const nearbyCompaniesPrompt = `You are helping a business find real, actual service providers near their location.
+    const helpfulCompaniesPrompt = `You are helping a business find real, actual service providers near their location.
 
 Business: ${businessName}
 Address: ${businessAddress}
@@ -160,23 +160,23 @@ Include a subject line and full email body. Use [Service Provider Name] as a pla
 
 Return as plain text with "Subject:" and "Body:" labels.`;
 
-    const [nearbyCompaniesResponse, actionableAdviceResponse, emailTemplateResponse] = await Promise.all([
-      callAnthropicAPI(nearbyCompaniesPrompt),
+    const [helpfulCompaniesResponse, actionableAdviceResponse, emailTemplateResponse] = await Promise.all([
+      callAnthropicAPI(helpfulCompaniesPrompt),
       callAnthropicAPI(actionableAdvicePrompt),
       callAnthropicAPI(emailTemplatePrompt),
     ]);
 
-    let nearbyCompanies;
+    let helpfulCompanies;
     let actionableAdvice;
 
     try {
-      nearbyCompanies = extractJSON(nearbyCompaniesResponse);
+      helpfulCompanies = extractJSON(helpfulCompaniesResponse);
 
-      if (!Array.isArray(nearbyCompanies)) {
+      if (!Array.isArray(helpfulCompanies)) {
         throw new Error("Response is not an array");
       }
 
-      nearbyCompanies = nearbyCompanies.map(company => ({
+      helpfulCompanies = helpfulCompanies.map(company => ({
         name: company.name || "Unknown",
         address: company.address || "N/A",
         industry: company.industry || industry,
@@ -184,8 +184,8 @@ Return as plain text with "Subject:" and "Body:" labels.`;
         website: company.website || "N/A"
       }));
     } catch (error) {
-      console.error("Error parsing nearby companies:", error.message);
-      nearbyCompanies = [
+      console.error("Error parsing helpful companies:", error.message);
+      helpfulCompanies = [
         {
           name: "Error finding local companies",
           address: "Please try searching online for service providers in your area",
@@ -238,7 +238,7 @@ Return as plain text with "Subject:" and "Body:" labels.`;
     }
 
     const response = {
-      nearbyCompanies,
+      helpfulCompanies,
       actionableAdvice,
       emailTemplate: emailTemplateResponse,
       timestamp: new Date().toISOString(),

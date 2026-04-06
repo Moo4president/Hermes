@@ -561,8 +561,8 @@
 
         <div class="results-container" id="resultsContainer">
             <div class="result-panel">
-                <h2>Nearby Companies</h2>
-                <div class="result-content" id="nearbyCompanies">
+                <h2>Helpful companies</h2>
+                <div class="result-content" id="helpfulCompanies">
                     <div class="empty-state">Results will appear here after analysis</div>
                 </div>
             </div>
@@ -589,7 +589,7 @@
         const errorMessage = document.getElementById('errorMessage');
         const submitBtn = form.querySelector('.submit-btn');
 
-        const nearbyCompaniesPanel = document.getElementById('nearbyCompanies');
+        const helpfulCompaniesPanel = document.getElementById('helpfulCompanies');
         const actionableAdvicePanel = document.getElementById('actionableAdvice');
         const emailTemplatePanel = document.getElementById('emailTemplate');
 
@@ -606,7 +606,7 @@
             panel.innerHTML = `<div class="empty-state">${message}</div>`;
         }
 
-        function populateNearbyCompanies(companies) {
+        function populateHelpfulCompanies(companies) {
             const companyListHTML = companies.map(company => {
                 const websiteHTML = company.website && company.website !== 'N/A'
                     ? `<a href="${company.website}" target="_blank" rel="noopener noreferrer">${company.website}</a>`
@@ -622,7 +622,7 @@
                 `;
             }).join('');
 
-            nearbyCompaniesPanel.innerHTML = `<div class="company-list">${companyListHTML}</div>`;
+            helpfulCompaniesPanel.innerHTML = `<div class="company-list">${companyListHTML}</div>`;
         }
 
         function getIconEmoji(iconName) {
@@ -735,7 +735,7 @@
             errorMessage.style.display = 'none';
             submitBtn.disabled = true;
 
-            showLoadingState(nearbyCompaniesPanel);
+            showLoadingState(helpfulCompaniesPanel);
             showLoadingState(actionableAdvicePanel);
             showLoadingState(emailTemplatePanel);
 
@@ -765,8 +765,8 @@
 
                 const result = await response.json();
 
-                if (result.nearbyCompanies && result.actionableAdvice && result.emailTemplate) {
-                    populateNearbyCompanies(result.nearbyCompanies);
+                if (result.helpfulCompanies && result.actionableAdvice && result.emailTemplate) {
+                    populateHelpfulCompanies(result.helpfulCompanies);
                     populateActionableAdvice(result.actionableAdvice);
                     populateEmailTemplate(result.emailTemplate);
                     successMessage.style.display = 'block';
@@ -780,7 +780,7 @@
                 errorMessage.textContent = error.message || 'An error occurred. Please try again.';
                 errorMessage.style.display = 'block';
 
-                showEmptyState(nearbyCompaniesPanel, 'Failed to load data');
+                showEmptyState(helpfulCompaniesPanel, 'Failed to load data');
                 showEmptyState(actionableAdvicePanel, 'Failed to load data');
                 showEmptyState(emailTemplatePanel, 'Failed to load data');
             } finally {
