@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hermes.AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .wing-logo {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .wing {
+            width: 120px;
+            height: 120px;
+        }
+
+        .wing img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: -1px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.875rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            padding: 0.875rem 2rem;
+            background-color: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .submit-btn:hover {
+            background-color: #333;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .submit-btn:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .success-message {
+            display: none;
+            padding: 1rem;
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 6px;
+            color: #2e7d32;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .error-message {
+            display: none;
+            padding: 1rem;
+            background-color: #ffebee;
+            border: 1px solid #f44336;
+            border-radius: 6px;
+            color: #c62828;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .results-container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .result-panel {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+        }
+
+        .result-panel:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .result-panel h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: #1a1a1a;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.75rem;
+        }
+
+        .result-content {
+            flex: 1;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a1a1a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .result-data {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .result-data h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 0.75rem 0;
+            color: #1a1a1a;
+        }
+
+        .result-data p {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+        }
+
+        .result-data ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+        }
+
+        .result-data li {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .advice-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .advice-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .advice-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .advice-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .advice-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            font-size: 1.75rem;
+        }
+
+        .advice-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        .advice-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .advice-description {
+            font-size: 1.05rem;
+            color: #555;
+            margin: 0;
+            line-height: 1.7;
+            text-align: left;
+        }
+
+        .advice-description p {
+            margin: 0 0 0.75rem 0;
+            text-align: left;
+        }
+
+        .advice-description p:last-child {
+            margin-bottom: 0;
+        }
+
+        .company-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .company-item {
+            padding: 1.25rem;
+            background-color: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .company-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-item h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .company-item p {
+            margin: 0.25rem 0;
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .company-website {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .company-website a {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .company-website a:hover {
+            color: #004499;
+            text-decoration: underline;
+        }
+
+        .company-website .no-website {
+            color: #999;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .email-template {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .email-subject {
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .email-body {
+            text-align: left;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: pre-wrap;
+        }
+
+        .email-signature {
+            text-align: left;
+            color: #666;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                gap: 2rem;
+                padding: 1rem;
+            }
+
+            .wing-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .form-container {
+                max-width: 100%;
+            }
+
+            .result-panel {
+                padding: 1.5rem;
+            }
+
+            .result-panel h2 {
+                font-size: 1.25rem;
+            }
+
+            .company-list {
+                grid-template-columns: 1fr;
+            }
+
+            .advice-items {
+                grid-template-columns: 1fr;
+            }
+
+            .advice-headline {
+                font-size: 1.5rem;
+            }
+
+            .advice-item {
+                padding: 1.5rem;
+                gap: 1rem;
+                aspect-ratio: auto;
+            }
+
+            .advice-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.5rem;
+            }
+
+            .advice-title {
+                font-size: 1.1rem;
+            }
+
+            .advice-description {
+                font-size: 1rem;
+            }
+
+            .email-template {
+                font-size: 0.9rem;
+                padding: 1.5rem;
+            }
+
+            .email-subject {
+                margin-bottom: 1.25rem;
+            }
+
+            .email-body {
+                margin-bottom: 1.5rem;
+                padding-bottom: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wing-logo">
+            <div class="wing">
+                <img src="/Hermes.webp" alt="Hermes.AI Logo">
+            </div>
+        </div>
+        <h1>Hermes.AI</h1>
+
+        <form class="form-container" id="analysisForm">
+            <div id="successMessage" class="success-message">
+                Analysis submitted successfully!
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+
+            <div class="form-group">
+                <label for="businessName">Business Name</label>
+                <input
+                    type="text"
+                    id="businessName"
+                    name="businessName"
+                    required
+                    placeholder="Enter your business name"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="businessAddress">Business Address</label>
+                <input
+                    type="text"
+                    id="businessAddress"
+                    name="businessAddress"
+                    required
+                    placeholder="Enter your business address"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="industry">Industry</label>
+                <input
+                    type="text"
+                    id="industry"
+                    name="industry"
+                    required
+                    placeholder="Enter your industry"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="painPoints">Pain Points</label>
+                <textarea
+                    id="painPoints"
+                    name="painPoints"
+                    required
+                    placeholder="Describe your main pain points"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Analyze</button>
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="result-panel">
+                <h2>Nearby Companies</h2>
+                <div class="result-content" id="nearbyCompanies">
+                    <div class="empty-state">Results will appear here after analysis</div>
+                </div>
+            </div>
+
+            <div class="result-panel">
+                <h2>Actionable Advice</h2>
+                <div class="result-content" id="actionableAdvice">
+                    <div class="empty-state">Results will appear here after analysis</div>
+                </div>
+            </div>
+
+            <div class="result-panel">
+                <h2>Outreach Email Template</h2>
+                <div class="result-content" id="emailTemplate">
+                    <div class="empty-state">Results will appear here after analysis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('analysisForm');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = form.querySelector('.submit-btn');
+
+        const nearbyCompaniesPanel = document.getElementById('nearbyCompanies');
+        const actionableAdvicePanel = document.getElementById('actionableAdvice');
+        const emailTemplatePanel = document.getElementById('emailTemplate');
+
+        function showLoadingState(panel) {
+            panel.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading...</div>
+                </div>
+            `;
+        }
+
+        function showEmptyState(panel, message = 'Results will appear here after analysis') {
+            panel.innerHTML = `<div class="empty-state">${message}</div>`;
+        }
+
+        function populateNearbyCompanies(companies) {
+            const companyListHTML = companies.map(company => {
+                const websiteHTML = company.website && company.website !== 'N/A'
+                    ? `<a href="${company.website}" target="_blank" rel="noopener noreferrer">${company.website}</a>`
+                    : `<span class="no-website">Website not available</span>`;
+
+                return `
+                    <div class="company-item">
+                        <h4>${company.name}</h4>
+                        <div class="company-website">
+                            <strong>Website:</strong> ${websiteHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            nearbyCompaniesPanel.innerHTML = `<div class="company-list">${companyListHTML}</div>`;
+        }
+
+        function getIconEmoji(iconName) {
+            const iconMap = {
+                'target': '🎯',
+                'lightbulb': '💡',
+                'chart': '📊',
+                'users': '👥',
+                'gear': '⚙️',
+                'star': '⭐',
+                'rocket': '🚀',
+                'shield': '🛡️',
+                'check': '✅',
+                'arrow': '➡️'
+            };
+            return iconMap[iconName] || '📌';
+        }
+
+        function breakIntoParagraphs(text) {
+            const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+            const paragraphs = [];
+            let currentParagraph = [];
+
+            sentences.forEach((sentence, index) => {
+                currentParagraph.push(sentence.trim());
+
+                if ((index + 1) % 2 === 0 || index === sentences.length - 1) {
+                    paragraphs.push(currentParagraph.join(' '));
+                    currentParagraph = [];
+                }
+            });
+
+            return paragraphs.map(p => `<p>${p}</p>`).join('');
+        }
+
+        function populateActionableAdvice(advice) {
+            const itemsHTML = advice.items.map(item => `
+                <div class="advice-item">
+                    <div class="advice-icon">
+                        ${getIconEmoji(item.icon)}
+                    </div>
+                    <div class="advice-content">
+                        <h4 class="advice-title">${item.title}</h4>
+                        <div class="advice-description">${breakIntoParagraphs(item.description)}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            const adviceHTML = `
+                <div class="advice-section">
+                    <div class="advice-items">
+                        ${itemsHTML}
+                    </div>
+                </div>
+            `;
+            actionableAdvicePanel.innerHTML = adviceHTML;
+        }
+
+        function populateEmailTemplate(template) {
+            const lines = template.split('\n');
+            let subjectLine = '';
+            let bodyLines = [];
+            let signatureLines = [];
+            let inSignature = false;
+            let inBody = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                if (line.startsWith('Subject:')) {
+                    subjectLine = line;
+                } else if (line.startsWith('Body:')) {
+                    inBody = true;
+                    continue;
+                } else if (line.trim() === '' && i > 0 && bodyLines.length > 0 && !inSignature) {
+                    inSignature = true;
+                } else if (inSignature || (line.startsWith('Best regards') || line.startsWith('Sincerely'))) {
+                    inSignature = true;
+                    signatureLines.push(line);
+                } else if (subjectLine && !line.startsWith('Body:')) {
+                    bodyLines.push(line);
+                }
+            }
+
+            const subjectHTML = subjectLine
+                ? `<div class="email-subject">${subjectLine}</div>`
+                : '';
+
+            const bodyHTML = bodyLines.length > 0
+                ? `<div class="email-body">${bodyLines.join('\n')}</div>`
+                : '';
+
+            const signatureHTML = signatureLines.length > 0
+                ? `<div class="email-signature">${signatureLines.join('\n')}</div>`
+                : '';
+
+            emailTemplatePanel.innerHTML = `
+                <div class="email-template">
+                    ${subjectHTML}
+                    ${bodyHTML}
+                    ${signatureHTML}
+                </div>
+            `;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            submitBtn.disabled = true;
+
+            showLoadingState(nearbyCompaniesPanel);
+            showLoadingState(actionableAdvicePanel);
+            showLoadingState(emailTemplatePanel);
+
+            const formData = {
+                businessName: document.getElementById('businessName').value,
+                businessAddress: document.getElementById('businessAddress').value,
+                industry: document.getElementById('industry').value,
+                painPoints: document.getElementById('painPoints').value,
+            };
+
+            try {
+                const apiUrl = `https://uybtjmfqjxemuecetleb.supabase.co/functions/v1/analyze`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5YnRqbWZxanhlbXVlY2V0bGViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDE4MDMsImV4cCI6MjA5MDk3NzgwM30.-b4jURUs_vXMhSz_YQIstztT5bMPvy1qC9TQ_lRewYc`,
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || 'Failed to submit analysis');
+                }
+
+                const result = await response.json();
+
+                if (result.nearbyCompanies && result.actionableAdvice && result.emailTemplate) {
+                    populateNearbyCompanies(result.nearbyCompanies);
+                    populateActionableAdvice(result.actionableAdvice);
+                    populateEmailTemplate(result.emailTemplate);
+                    successMessage.style.display = 'block';
+                } else {
+                    throw new Error('Invalid response format');
+                }
+
+                form.reset();
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = error.message || 'An error occurred. Please try again.';
+                errorMessage.style.display = 'block';
+
+                showEmptyState(nearbyCompaniesPanel, 'Failed to load data');
+                showEmptyState(actionableAdvicePanel, 'Failed to load data');
+                showEmptyState(emailTemplatePanel, 'Failed to load data');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
