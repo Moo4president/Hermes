@@ -1,6 +1,6 @@
 # Hermes.AI - Business Analysis Tool
 
-A business intelligence platform that helps companies identify pain points, discover nearby service providers, and receive AI-powered actionable advice using Anthropic's Claude AI.
+A business intelligence platform that helps companies identify pain points, discover nearby service providers, and receive AI-powered actionable advice using Anthropic's Claude AI or Perplexity.
 
 ## Tech Stack
 
